@@ -11,6 +11,7 @@ fn main() {
     // From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/transaction-status/src/lib.rs#L22-L27
     // This is the oldest version of the TransactionStatusMeta struct that we have
     // in the Solana codebase. It's used in the transaction-status crate.
+    // History taken from from https://github.com/solana-labs/solana/commits/ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb/transaction-status/src/lib.rs
     generate_bindings(commit);
 }
 

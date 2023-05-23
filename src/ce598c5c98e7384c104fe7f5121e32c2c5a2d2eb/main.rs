@@ -14,6 +14,7 @@ fn main() {
     // From https://github.com/solana-labs/solana/blob/ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb/transaction-status/src/lib.rs#L140-L147
     // This is the last version of the TransactionStatusMeta struct before it
     // started using Protobufs.
+    // History taken from from https://github.com/solana-labs/solana/commits/ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb/transaction-status/src/lib.rs
     generate_bindings(commit);
 }
 
