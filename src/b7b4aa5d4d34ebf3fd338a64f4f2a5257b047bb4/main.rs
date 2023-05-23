@@ -27,11 +27,11 @@ use std::default::Default;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 fn main() {
-    println!("Hello, world!");
-    gen();
+    println!("Starting generation...");
+    generate_bindings();
 }
 
-fn gen() {
+fn generate_bindings() {
     println!("started");
     let conf = TracerConfig::default().record_samples_for_structs(true);
     let mut tracer = Tracer::new(conf);
@@ -116,8 +116,9 @@ fn gen() {
     std::fs::write(name.to_string() + ".go", source).unwrap();
 }
 
-// https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/transaction-status/src/lib.rs
-// https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/sdk/src/transaction.rs
+// From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/transaction-status/src/lib.rs#L22-L27
+// This is the oldest version of the TransactionStatusMeta struct that we have
+// in the Solana codebase. It's used in the transaction-status crate.
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionStatusMeta {
@@ -127,8 +128,11 @@ pub struct TransactionStatusMeta {
     pub post_balances: Vec<u64>,
 }
 use std::result;
+use thiserror::Error;
 
 pub type Result<T> = result::Result<T, TransactionError>;
+
+// From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/sdk/src/transaction.rs#L18-L66
 /// Reasons a transaction might be rejected.
 #[derive(Serialize, Deserialize, Default, EnumIter)]
 pub enum TransactionError {
@@ -182,7 +186,7 @@ pub enum TransactionError {
     InvalidProgramForExecution,
 }
 
-use thiserror::Error;
+// From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/sdk/src/instruction.rs#L10-L125
 /// Reasons the runtime might have rejected an instruction.
 #[derive(Serialize, Deserialize, Debug, Error, PartialEq, Eq, Clone, Default, EnumIter)]
 pub enum InstructionError {

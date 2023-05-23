@@ -25,10 +25,10 @@ use {
 
 fn main() {
     println!("Hello, world!");
-    gen();
+    generate_bindings();
 }
 
-fn gen() {
+fn generate_bindings() {
     println!("started");
     let mut tracer = Tracer::new(TracerConfig::default());
 
