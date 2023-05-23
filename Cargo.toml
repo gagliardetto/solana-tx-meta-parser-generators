@@ -1,0 +1,31 @@
+[package]
+name = "demo-serde-txmeta"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bincode = "1.3.1"
+Inflector = "0.11.4"
+lazy_static = "1.4.0"
+serde = "1.0.112"
+serde_derive = "1.0.103"
+serde_json = "1.0.56"
+serde-generate = "0.25.1"
+serde-reflection = "0.3.6"
+solana-sdk = "1.14.18"
+solana-account-decoder = "1.14.18"
+solana-transaction-status = "1.14.18"
+solana-storage-proto = "1.14.18"
+thiserror = "1.0.40"
+strum = "0.24.1"
+strum_macros = "0.24.3"
+
+[[bin]]
+name = "b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4"
+path = "src/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/main.rs"
+
+[[bin]]
+name = "ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb"
+path = "src/ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb/main.rs"
