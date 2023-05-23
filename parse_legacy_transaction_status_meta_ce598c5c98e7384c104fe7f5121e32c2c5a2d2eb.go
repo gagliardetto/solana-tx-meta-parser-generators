@@ -1,4 +1,4 @@
-package parse_legacy_transaction_status_meta
+package parse_legacy_transaction_status_meta_ce598c5c98e7384c104fe7f5121e32c2c5a2d2eb
 
 
 import (
@@ -7,6 +7,97 @@ import (
 	"github.com/novifinancial/serde-reflection/serde-generate/runtime/golang/bincode"
 )
 
+
+type CompiledInstruction struct {
+	ProgramIdIndex uint8
+	Accounts struct {Field0 struct {Field0 uint8}; Field1 uint8; Field2 uint8; Field3 uint8}
+	Data struct {Field0 struct {Field0 uint8}; Field1 uint8; Field2 uint8; Field3 uint8}
+}
+
+func (obj *CompiledInstruction) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	if err := serializer.SerializeU8(obj.ProgramIdIndex); err != nil { return err }
+	if err := serialize_tuple4_tuple1_u8_u8_u8_u8(obj.Accounts, serializer); err != nil { return err }
+	if err := serialize_tuple4_tuple1_u8_u8_u8_u8(obj.Data, serializer); err != nil { return err }
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *CompiledInstruction) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func DeserializeCompiledInstruction(deserializer serde.Deserializer) (CompiledInstruction, error) {
+	var obj CompiledInstruction
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.ProgramIdIndex = val } else { return obj, err }
+	if val, err := deserialize_tuple4_tuple1_u8_u8_u8_u8(deserializer); err == nil { obj.Accounts = val } else { return obj, err }
+	if val, err := deserialize_tuple4_tuple1_u8_u8_u8_u8(deserializer); err == nil { obj.Data = val } else { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+func BincodeDeserializeCompiledInstruction(input []byte) (CompiledInstruction, error) {
+	if input == nil {
+		var obj CompiledInstruction
+		return obj, fmt.Errorf("Cannot deserialize null array")
+	}
+	deserializer := bincode.NewDeserializer(input);
+	obj, err := DeserializeCompiledInstruction(deserializer)
+	if err == nil && deserializer.GetBufferOffset() < uint64(len(input)) {
+		return obj, fmt.Errorf("Some input bytes were not read")
+	}
+	return obj, err
+}
+
+type InnerInstructions struct {
+	Index uint8
+	Instructions []CompiledInstruction
+}
+
+func (obj *InnerInstructions) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	if err := serializer.SerializeU8(obj.Index); err != nil { return err }
+	if err := serialize_vector_CompiledInstruction(obj.Instructions, serializer); err != nil { return err }
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InnerInstructions) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func DeserializeInnerInstructions(deserializer serde.Deserializer) (InnerInstructions, error) {
+	var obj InnerInstructions
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.Index = val } else { return obj, err }
+	if val, err := deserialize_vector_CompiledInstruction(deserializer); err == nil { obj.Instructions = val } else { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+func BincodeDeserializeInnerInstructions(input []byte) (InnerInstructions, error) {
+	if input == nil {
+		var obj InnerInstructions
+		return obj, fmt.Errorf("Cannot deserialize null array")
+	}
+	deserializer := bincode.NewDeserializer(input);
+	obj, err := DeserializeInnerInstructions(deserializer)
+	if err == nil && deserializer.GetBufferOffset() < uint64(len(input)) {
+		return obj, fmt.Errorf("Some input bytes were not read")
+	}
+	return obj, err
+}
 
 type InstructionError interface {
 	isInstructionError()
@@ -195,7 +286,7 @@ func DeserializeInstructionError(deserializer serde.Deserializer) (InstructionEr
 		}
 
 	case 25:
-		if val, err := load_InstructionError__CustomError(deserializer); err == nil {
+		if val, err := load_InstructionError__Custom(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
@@ -203,6 +294,83 @@ func DeserializeInstructionError(deserializer serde.Deserializer) (InstructionEr
 
 	case 26:
 		if val, err := load_InstructionError__InvalidError(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 27:
+		if val, err := load_InstructionError__ExecutableDataModified(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 28:
+		if val, err := load_InstructionError__ExecutableLamportChange(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 29:
+		if val, err := load_InstructionError__ExecutableAccountNotRentExempt(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 30:
+		if val, err := load_InstructionError__UnsupportedProgramId(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 31:
+		if val, err := load_InstructionError__CallDepth(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 32:
+		if val, err := load_InstructionError__MissingAccount(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 33:
+		if val, err := load_InstructionError__ReentrancyNotAllowed(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 34:
+		if val, err := load_InstructionError__MaxSeedLengthExceeded(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 35:
+		if val, err := load_InstructionError__InvalidSeeds(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 36:
+		if val, err := load_InstructionError__InvalidRealloc(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 37:
+		if val, err := load_InstructionError__ComputationalBudgetExceeded(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
@@ -926,11 +1094,11 @@ func load_InstructionError__DuplicateAccountOutOfSync(deserializer serde.Deseria
 	return obj, nil
 }
 
-type InstructionError__CustomError uint32
+type InstructionError__Custom uint32
 
-func (*InstructionError__CustomError) isInstructionError() {}
+func (*InstructionError__Custom) isInstructionError() {}
 
-func (obj *InstructionError__CustomError) Serialize(serializer serde.Serializer) error {
+func (obj *InstructionError__Custom) Serialize(serializer serde.Serializer) error {
 	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
 	serializer.SerializeVariantIndex(25)
 	if err := serializer.SerializeU32(((uint32)(*obj))); err != nil { return err }
@@ -938,7 +1106,7 @@ func (obj *InstructionError__CustomError) Serialize(serializer serde.Serializer)
 	return nil
 }
 
-func (obj *InstructionError__CustomError) BincodeSerialize() ([]byte, error) {
+func (obj *InstructionError__Custom) BincodeSerialize() ([]byte, error) {
 	if obj == nil {
 		return nil, fmt.Errorf("Cannot serialize null object")
 	}
@@ -947,12 +1115,12 @@ func (obj *InstructionError__CustomError) BincodeSerialize() ([]byte, error) {
 	return serializer.GetBytes(), nil
 }
 
-func load_InstructionError__CustomError(deserializer serde.Deserializer) (InstructionError__CustomError, error) {
+func load_InstructionError__Custom(deserializer serde.Deserializer) (InstructionError__Custom, error) {
 	var obj uint32
-	if err := deserializer.IncreaseContainerDepth(); err != nil { return (InstructionError__CustomError)(obj), err }
-	if val, err := deserializer.DeserializeU32(); err == nil { obj = val } else { return ((InstructionError__CustomError)(obj)), err }
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return (InstructionError__Custom)(obj), err }
+	if val, err := deserializer.DeserializeU32(); err == nil { obj = val } else { return ((InstructionError__Custom)(obj)), err }
 	deserializer.DecreaseContainerDepth()
-	return (InstructionError__CustomError)(obj), nil
+	return (InstructionError__Custom)(obj), nil
 }
 
 type InstructionError__InvalidError struct {
@@ -978,6 +1146,314 @@ func (obj *InstructionError__InvalidError) BincodeSerialize() ([]byte, error) {
 
 func load_InstructionError__InvalidError(deserializer serde.Deserializer) (InstructionError__InvalidError, error) {
 	var obj InstructionError__InvalidError
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__ExecutableDataModified struct {
+}
+
+func (*InstructionError__ExecutableDataModified) isInstructionError() {}
+
+func (obj *InstructionError__ExecutableDataModified) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(27)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__ExecutableDataModified) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__ExecutableDataModified(deserializer serde.Deserializer) (InstructionError__ExecutableDataModified, error) {
+	var obj InstructionError__ExecutableDataModified
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__ExecutableLamportChange struct {
+}
+
+func (*InstructionError__ExecutableLamportChange) isInstructionError() {}
+
+func (obj *InstructionError__ExecutableLamportChange) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(28)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__ExecutableLamportChange) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__ExecutableLamportChange(deserializer serde.Deserializer) (InstructionError__ExecutableLamportChange, error) {
+	var obj InstructionError__ExecutableLamportChange
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__ExecutableAccountNotRentExempt struct {
+}
+
+func (*InstructionError__ExecutableAccountNotRentExempt) isInstructionError() {}
+
+func (obj *InstructionError__ExecutableAccountNotRentExempt) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(29)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__ExecutableAccountNotRentExempt) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__ExecutableAccountNotRentExempt(deserializer serde.Deserializer) (InstructionError__ExecutableAccountNotRentExempt, error) {
+	var obj InstructionError__ExecutableAccountNotRentExempt
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__UnsupportedProgramId struct {
+}
+
+func (*InstructionError__UnsupportedProgramId) isInstructionError() {}
+
+func (obj *InstructionError__UnsupportedProgramId) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(30)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__UnsupportedProgramId) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__UnsupportedProgramId(deserializer serde.Deserializer) (InstructionError__UnsupportedProgramId, error) {
+	var obj InstructionError__UnsupportedProgramId
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__CallDepth struct {
+}
+
+func (*InstructionError__CallDepth) isInstructionError() {}
+
+func (obj *InstructionError__CallDepth) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(31)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__CallDepth) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__CallDepth(deserializer serde.Deserializer) (InstructionError__CallDepth, error) {
+	var obj InstructionError__CallDepth
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__MissingAccount struct {
+}
+
+func (*InstructionError__MissingAccount) isInstructionError() {}
+
+func (obj *InstructionError__MissingAccount) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(32)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__MissingAccount) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__MissingAccount(deserializer serde.Deserializer) (InstructionError__MissingAccount, error) {
+	var obj InstructionError__MissingAccount
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__ReentrancyNotAllowed struct {
+}
+
+func (*InstructionError__ReentrancyNotAllowed) isInstructionError() {}
+
+func (obj *InstructionError__ReentrancyNotAllowed) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(33)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__ReentrancyNotAllowed) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__ReentrancyNotAllowed(deserializer serde.Deserializer) (InstructionError__ReentrancyNotAllowed, error) {
+	var obj InstructionError__ReentrancyNotAllowed
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__MaxSeedLengthExceeded struct {
+}
+
+func (*InstructionError__MaxSeedLengthExceeded) isInstructionError() {}
+
+func (obj *InstructionError__MaxSeedLengthExceeded) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(34)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__MaxSeedLengthExceeded) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__MaxSeedLengthExceeded(deserializer serde.Deserializer) (InstructionError__MaxSeedLengthExceeded, error) {
+	var obj InstructionError__MaxSeedLengthExceeded
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__InvalidSeeds struct {
+}
+
+func (*InstructionError__InvalidSeeds) isInstructionError() {}
+
+func (obj *InstructionError__InvalidSeeds) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(35)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__InvalidSeeds) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__InvalidSeeds(deserializer serde.Deserializer) (InstructionError__InvalidSeeds, error) {
+	var obj InstructionError__InvalidSeeds
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__InvalidRealloc struct {
+}
+
+func (*InstructionError__InvalidRealloc) isInstructionError() {}
+
+func (obj *InstructionError__InvalidRealloc) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(36)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__InvalidRealloc) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__InvalidRealloc(deserializer serde.Deserializer) (InstructionError__InvalidRealloc, error) {
+	var obj InstructionError__InvalidRealloc
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type InstructionError__ComputationalBudgetExceeded struct {
+}
+
+func (*InstructionError__ComputationalBudgetExceeded) isInstructionError() {}
+
+func (obj *InstructionError__ComputationalBudgetExceeded) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(37)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *InstructionError__ComputationalBudgetExceeded) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_InstructionError__ComputationalBudgetExceeded(deserializer serde.Deserializer) (InstructionError__ComputationalBudgetExceeded, error) {
+	var obj InstructionError__ComputationalBudgetExceeded
 	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
 	deserializer.DecreaseContainerDepth()
 	return obj, nil
@@ -1190,6 +1666,20 @@ func DeserializeTransactionError(deserializer serde.Deserializer) (TransactionEr
 
 	case 13:
 		if val, err := load_TransactionError__InvalidProgramForExecution(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 14:
+		if val, err := load_TransactionError__SanitizeFailure(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 15:
+		if val, err := load_TransactionError__ClusterMaintenance(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
@@ -1611,11 +2101,68 @@ func load_TransactionError__InvalidProgramForExecution(deserializer serde.Deseri
 	return obj, nil
 }
 
+type TransactionError__SanitizeFailure struct {
+}
+
+func (*TransactionError__SanitizeFailure) isTransactionError() {}
+
+func (obj *TransactionError__SanitizeFailure) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(14)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *TransactionError__SanitizeFailure) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_TransactionError__SanitizeFailure(deserializer serde.Deserializer) (TransactionError__SanitizeFailure, error) {
+	var obj TransactionError__SanitizeFailure
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type TransactionError__ClusterMaintenance struct {
+}
+
+func (*TransactionError__ClusterMaintenance) isTransactionError() {}
+
+func (obj *TransactionError__ClusterMaintenance) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil { return err }
+	serializer.SerializeVariantIndex(15)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *TransactionError__ClusterMaintenance) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer();
+	if err := obj.Serialize(serializer); err != nil { return nil, err }
+	return serializer.GetBytes(), nil
+}
+
+func load_TransactionError__ClusterMaintenance(deserializer serde.Deserializer) (TransactionError__ClusterMaintenance, error) {
+	var obj TransactionError__ClusterMaintenance
+	if err := deserializer.IncreaseContainerDepth(); err != nil { return obj, err }
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
 type TransactionStatusMeta struct {
 	Status Result
 	Fee uint64
 	PreBalances []uint64
 	PostBalances []uint64
+	InnerInstructions *[]InnerInstructions
 }
 
 func (obj *TransactionStatusMeta) Serialize(serializer serde.Serializer) error {
@@ -1624,6 +2171,7 @@ func (obj *TransactionStatusMeta) Serialize(serializer serde.Serializer) error {
 	if err := serializer.SerializeU64(obj.Fee); err != nil { return err }
 	if err := serialize_vector_u64(obj.PreBalances, serializer); err != nil { return err }
 	if err := serialize_vector_u64(obj.PostBalances, serializer); err != nil { return err }
+	if err := serialize_option_vector_InnerInstructions(obj.InnerInstructions, serializer); err != nil { return err }
 	serializer.DecreaseContainerDepth()
 	return nil
 }
@@ -1644,6 +2192,7 @@ func DeserializeTransactionStatusMeta(deserializer serde.Deserializer) (Transact
 	if val, err := deserializer.DeserializeU64(); err == nil { obj.Fee = val } else { return obj, err }
 	if val, err := deserialize_vector_u64(deserializer); err == nil { obj.PreBalances = val } else { return obj, err }
 	if val, err := deserialize_vector_u64(deserializer); err == nil { obj.PostBalances = val } else { return obj, err }
+	if val, err := deserialize_option_vector_InnerInstructions(deserializer); err == nil { obj.InnerInstructions = val } else { return obj, err }
 	deserializer.DecreaseContainerDepth()
 	return obj, nil
 }
@@ -1660,6 +2209,92 @@ func BincodeDeserializeTransactionStatusMeta(input []byte) (TransactionStatusMet
 	}
 	return obj, err
 }
+func serialize_option_vector_InnerInstructions(value *[]InnerInstructions, serializer serde.Serializer) error {
+	if value != nil {
+		if err := serializer.SerializeOptionTag(true); err != nil { return err }
+		if err := serialize_vector_InnerInstructions((*value), serializer); err != nil { return err }
+	} else {
+		if err := serializer.SerializeOptionTag(false); err != nil { return err }
+	}
+	return nil
+}
+
+func deserialize_option_vector_InnerInstructions(deserializer serde.Deserializer) (*[]InnerInstructions, error) {
+	tag, err := deserializer.DeserializeOptionTag()
+	if err != nil { return nil, err }
+	if tag {
+		value := new([]InnerInstructions)
+		if val, err := deserialize_vector_InnerInstructions(deserializer); err == nil { *value = val } else { return nil, err }
+	        return value, nil
+	} else {
+		return nil, nil
+	}
+}
+
+func serialize_tuple1_u8(value struct {Field0 uint8}, serializer serde.Serializer) error {
+	if err := serializer.SerializeU8(value.Field0); err != nil { return err }
+	return nil
+}
+
+func deserialize_tuple1_u8(deserializer serde.Deserializer) (struct {Field0 uint8}, error) {
+	var obj struct {Field0 uint8}
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.Field0 = val } else { return obj, err }
+	return obj, nil
+}
+
+func serialize_tuple4_tuple1_u8_u8_u8_u8(value struct {Field0 struct {Field0 uint8}; Field1 uint8; Field2 uint8; Field3 uint8}, serializer serde.Serializer) error {
+	if err := serialize_tuple1_u8(value.Field0, serializer); err != nil { return err }
+	if err := serializer.SerializeU8(value.Field1); err != nil { return err }
+	if err := serializer.SerializeU8(value.Field2); err != nil { return err }
+	if err := serializer.SerializeU8(value.Field3); err != nil { return err }
+	return nil
+}
+
+func deserialize_tuple4_tuple1_u8_u8_u8_u8(deserializer serde.Deserializer) (struct {Field0 struct {Field0 uint8}; Field1 uint8; Field2 uint8; Field3 uint8}, error) {
+	var obj struct {Field0 struct {Field0 uint8}; Field1 uint8; Field2 uint8; Field3 uint8}
+	if val, err := deserialize_tuple1_u8(deserializer); err == nil { obj.Field0 = val } else { return obj, err }
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.Field1 = val } else { return obj, err }
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.Field2 = val } else { return obj, err }
+	if val, err := deserializer.DeserializeU8(); err == nil { obj.Field3 = val } else { return obj, err }
+	return obj, nil
+}
+
+func serialize_vector_CompiledInstruction(value []CompiledInstruction, serializer serde.Serializer) error {
+	if err := serializer.SerializeLen(uint64(len(value))); err != nil { return err }
+	for _, item := range(value) {
+		if err := item.Serialize(serializer); err != nil { return err }
+	}
+	return nil
+}
+
+func deserialize_vector_CompiledInstruction(deserializer serde.Deserializer) ([]CompiledInstruction, error) {
+	length, err := deserializer.DeserializeLen()
+	if err != nil { return nil, err }
+	obj := make([]CompiledInstruction, length)
+	for i := range(obj) {
+		if val, err := DeserializeCompiledInstruction(deserializer); err == nil { obj[i] = val } else { return nil, err }
+	}
+	return obj, nil
+}
+
+func serialize_vector_InnerInstructions(value []InnerInstructions, serializer serde.Serializer) error {
+	if err := serializer.SerializeLen(uint64(len(value))); err != nil { return err }
+	for _, item := range(value) {
+		if err := item.Serialize(serializer); err != nil { return err }
+	}
+	return nil
+}
+
+func deserialize_vector_InnerInstructions(deserializer serde.Deserializer) ([]InnerInstructions, error) {
+	length, err := deserializer.DeserializeLen()
+	if err != nil { return nil, err }
+	obj := make([]InnerInstructions, length)
+	for i := range(obj) {
+		if val, err := DeserializeInnerInstructions(deserializer); err == nil { obj[i] = val } else { return nil, err }
+	}
+	return obj, nil
+}
+
 func serialize_vector_u64(value []uint64, serializer serde.Serializer) error {
 	if err := serializer.SerializeLen(uint64(len(value))); err != nil { return err }
 	for _, item := range(value) {

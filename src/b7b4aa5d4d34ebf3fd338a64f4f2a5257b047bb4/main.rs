@@ -1,37 +1,20 @@
-#[macro_use]
-extern crate lazy_static;
-#[macro_use]
-extern crate serde_derive;
-
-use serde::de::Error;
 use serde::{Deserialize, Serialize};
 use serde_generate;
-use serde_reflection::{Registry, Samples, Tracer, TracerConfig};
-use solana_sdk::deserialize_utils::default_on_eof;
-use solana_sdk::pubkey::Pubkey;
-use solana_sdk::short_vec;
-use solana_sdk::transaction_context::TransactionReturnData;
-//use solana_storage_proto::StoredTransactionStatusMeta;
-use std::fmt::{self};
-use std::io::Write;
-use {
-    solana_account_decoder::{
-        parse_token::{real_number_string_trimmed, UiTokenAmount},
-        StringAmount,
-    },
-    solana_transaction_status::{Reward, RewardType, TransactionTokenBalance},
-    std::str::FromStr,
-};
+use serde_reflection::{Samples, Tracer, TracerConfig};
 
 use std::default::Default;
 use strum::IntoEnumIterator;
 use strum_macros::EnumIter;
 fn main() {
-    println!("Starting generation...");
-    generate_bindings();
+    let commit = "b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4";
+    println!("Starting generation for {}...", commit);
+    // From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/transaction-status/src/lib.rs#L22-L27
+    // This is the oldest version of the TransactionStatusMeta struct that we have
+    // in the Solana codebase. It's used in the transaction-status crate.
+    generate_bindings(commit);
 }
 
-fn generate_bindings() {
+fn generate_bindings(commit: &str) {
     println!("started");
     let conf = TracerConfig::default().record_samples_for_structs(true);
     let mut tracer = Tracer::new(conf);
@@ -39,6 +22,7 @@ fn generate_bindings() {
     let mut samples = Samples::new();
     println!("samples created");
 
+    // Sample cases with success:
     {
         let v = TransactionStatusMeta {
             status: Result::Ok(()),
@@ -52,10 +36,8 @@ fn generate_bindings() {
             panic!("error: {}", e);
         }
     }
+    // Sample cases with errors (all possible):
     {
-        // iterate over all the variants of the enum TransactionError:
-        //
-
         for te in TransactionError::iter() {
             match te {
                 // if it's InstructionError, then iterate over all the variants of InstructionError:
@@ -97,7 +79,7 @@ fn generate_bindings() {
     };
     println!("registry created");
 
-    let name = "parse_legacy_transaction_status_meta";
+    let name = "parse_legacy_transaction_status_meta_".to_string() + commit;
 
     // Create Golang definitions.
     let mut source = Vec::new();
@@ -117,8 +99,6 @@ fn generate_bindings() {
 }
 
 // From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/transaction-status/src/lib.rs#L22-L27
-// This is the oldest version of the TransactionStatusMeta struct that we have
-// in the Solana codebase. It's used in the transaction-status crate.
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionStatusMeta {
@@ -127,10 +107,11 @@ pub struct TransactionStatusMeta {
     pub pre_balances: Vec<u64>,
     pub post_balances: Vec<u64>,
 }
+
+// From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/sdk/src/transaction.rs#L68
+pub type Result<T> = result::Result<T, TransactionError>;
 use std::result;
 use thiserror::Error;
-
-pub type Result<T> = result::Result<T, TransactionError>;
 
 // From https://github.com/solana-labs/solana/blob/b7b4aa5d4d34ebf3fd338a64f4f2a5257b047bb4/sdk/src/transaction.rs#L18-L66
 /// Reasons a transaction might be rejected.
