@@ -34,8 +34,8 @@ fn generate_bindings(commit: &str) {
                     instructions: vec![solana_transaction_status_client_types::InnerInstruction {
                         instruction: solana_message::compiled_instruction::CompiledInstruction {
                             program_id_index: 1,
-                            accounts: vec![1, 2, 3],
-                            data: vec![1, 2, 3],
+                            accounts: Vec::from([1u8, 2, 3, 4, 123]),
+                            data: Vec::from([1u8, 2, 3]),
                         },
                         stack_height: Some(123),
                     }],
@@ -96,14 +96,52 @@ fn generate_bindings(commit: &str) {
                 },
             ]),
         };
-        let reg = tracer
-            .trace_value::<solana_transaction_status_client_types::TransactionStatusMeta>(
-                &mut samples,
-                &sample_meta,
-            );
-        println!("registered sample");
-        if let Err(e) = reg {
-            panic!("error: {}", e);
+        {
+            let mut reward_iter = RewardTypeIter::new();
+            for reward in reward_iter.by_ref() {
+                let mut sample_meta = sample_meta.clone();
+                sample_meta.rewards = Some(vec![solana_transaction_status_client_types::Reward {
+                    pubkey: "pubkey".to_string(),
+                    lamports: 100,
+                    post_balance: 200,
+                    reward_type: Some(reward),
+                    commission: Some(123),
+                }]);
+                let reg = tracer
+                    .trace_value::<solana_transaction_status_client_types::TransactionStatusMeta>(
+                        &mut samples,
+                        &sample_meta,
+                    );
+                println!("registered sample");
+                if let Err(e) = reg {
+                    panic!("error: {}", e);
+                }
+            }
+            let reg = tracer
+                .trace_value::<solana_transaction_status_client_types::TransactionStatusMeta>(
+                    &mut samples,
+                    &sample_meta,
+                );
+            println!("registered sample");
+            if let Err(e) = reg {
+                panic!("error: {}", e);
+            }
+        }
+        {
+            // register all solana_transaction_error::TransactionError variants individually
+            let mut te_iter = TransactionErrorIter::new();
+            for te in te_iter.by_ref() {
+                let te_name = format!("{:?}", te);
+                let sample_err = te;
+                let reg = tracer.trace_value::<solana_transaction_error::TransactionError>(
+                    &mut samples,
+                    &sample_err,
+                );
+                println!("TransactionError registered: {}", te_name);
+                if let Err(e) = reg {
+                    panic!("error: {}", e);
+                }
+            }
         }
         let mut te_iter = TransactionErrorIter::new();
         // Sample cases with errors (all possible):
@@ -334,6 +372,37 @@ impl Iterator for InstructionErrorIter {
             return None;
         }
         let item = variants[self.index].clone(); // Requires InstructionError: Clone
+        self.index += 1;
+        Some(item)
+    }
+}
+
+use solana_reward_info::RewardType;
+
+#[derive(Debug, Clone)]
+struct RewardTypeIter {
+    index: usize,
+}
+impl RewardTypeIter {
+    fn new() -> Self {
+        RewardTypeIter { index: 0 }
+    }
+}
+
+fn all_reward_types() -> &'static [RewardType] {
+    use RewardType::*;
+
+    &[Fee, Rent, Staking, Voting]
+}
+impl Iterator for RewardTypeIter {
+    type Item = RewardType;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        let variants = all_reward_types();
+        if self.index >= variants.len() {
+            return None;
+        }
+        let item = variants[self.index].clone(); // Requires RewardType: Clone
         self.index += 1;
         Some(item)
     }
