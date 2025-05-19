@@ -14,6 +14,8 @@ type CompiledInstruction struct {
 		Field1 uint8
 		Field2 uint8
 		Field3 uint8
+		Field4 uint8
+		Field5 uint8
 	}
 	Data struct {
 		Field0 struct{ Field0 uint8 }
@@ -30,7 +32,7 @@ func (obj *CompiledInstruction) Serialize(serializer serde.Serializer) error {
 	if err := serializer.SerializeU8(obj.ProgramIdIndex); err != nil {
 		return err
 	}
-	if err := serialize_tuple4_tuple1_u8_u8_u8_u8(obj.Accounts, serializer); err != nil {
+	if err := serialize_tuple6_tuple1_u8_u8_u8_u8_u8_u8(obj.Accounts, serializer); err != nil {
 		return err
 	}
 	if err := serialize_tuple4_tuple1_u8_u8_u8_u8(obj.Data, serializer); err != nil {
@@ -61,7 +63,7 @@ func DeserializeCompiledInstruction(deserializer serde.Deserializer) (CompiledIn
 	} else {
 		return obj, err
 	}
-	if val, err := deserialize_tuple4_tuple1_u8_u8_u8_u8(deserializer); err == nil {
+	if val, err := deserialize_tuple6_tuple1_u8_u8_u8_u8_u8_u8(deserializer); err == nil {
 		obj.Accounts = val
 	} else {
 		return obj, err
@@ -2763,8 +2765,29 @@ func DeserializeRewardType(deserializer serde.Deserializer) (RewardType, error) 
 	}
 
 	switch index {
+	case 0:
+		if val, err := load_RewardType__Fee(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
 	case 1:
 		if val, err := load_RewardType__Rent(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 2:
+		if val, err := load_RewardType__Staking(deserializer); err == nil {
+			return &val, nil
+		} else {
+			return nil, err
+		}
+
+	case 3:
+		if val, err := load_RewardType__Voting(deserializer); err == nil {
 			return &val, nil
 		} else {
 			return nil, err
@@ -2786,6 +2809,39 @@ func BincodeDeserializeRewardType(input []byte) (RewardType, error) {
 		return obj, fmt.Errorf("Some input bytes were not read")
 	}
 	return obj, err
+}
+
+type RewardType__Fee struct{}
+
+func (*RewardType__Fee) isRewardType() {}
+
+func (obj *RewardType__Fee) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(0)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *RewardType__Fee) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_RewardType__Fee(deserializer serde.Deserializer) (RewardType__Fee, error) {
+	var obj RewardType__Fee
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
 }
 
 type RewardType__Rent struct{}
@@ -2819,6 +2875,134 @@ func load_RewardType__Rent(deserializer serde.Deserializer) (RewardType__Rent, e
 	}
 	deserializer.DecreaseContainerDepth()
 	return obj, nil
+}
+
+type RewardType__Staking struct{}
+
+func (*RewardType__Staking) isRewardType() {}
+
+func (obj *RewardType__Staking) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(2)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *RewardType__Staking) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_RewardType__Staking(deserializer serde.Deserializer) (RewardType__Staking, error) {
+	var obj RewardType__Staking
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type RewardType__Voting struct{}
+
+func (*RewardType__Voting) isRewardType() {}
+
+func (obj *RewardType__Voting) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	serializer.SerializeVariantIndex(3)
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *RewardType__Voting) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func load_RewardType__Voting(deserializer serde.Deserializer) (RewardType__Voting, error) {
+	var obj RewardType__Voting
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+type StoredConfirmedBlockReward struct {
+	Pubkey   string
+	Lamports int64
+}
+
+func (obj *StoredConfirmedBlockReward) Serialize(serializer serde.Serializer) error {
+	if err := serializer.IncreaseContainerDepth(); err != nil {
+		return err
+	}
+	if err := serializer.SerializeStr(obj.Pubkey); err != nil {
+		return err
+	}
+	if err := serializer.SerializeI64(obj.Lamports); err != nil {
+		return err
+	}
+	serializer.DecreaseContainerDepth()
+	return nil
+}
+
+func (obj *StoredConfirmedBlockReward) BincodeSerialize() ([]byte, error) {
+	if obj == nil {
+		return nil, fmt.Errorf("Cannot serialize null object")
+	}
+	serializer := bincode.NewSerializer()
+	if err := obj.Serialize(serializer); err != nil {
+		return nil, err
+	}
+	return serializer.GetBytes(), nil
+}
+
+func DeserializeStoredConfirmedBlockReward(deserializer serde.Deserializer) (StoredConfirmedBlockReward, error) {
+	var obj StoredConfirmedBlockReward
+	if err := deserializer.IncreaseContainerDepth(); err != nil {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeStr(); err == nil {
+		obj.Pubkey = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeI64(); err == nil {
+		obj.Lamports = val
+	} else {
+		return obj, err
+	}
+	deserializer.DecreaseContainerDepth()
+	return obj, nil
+}
+
+func BincodeDeserializeStoredConfirmedBlockReward(input []byte) (StoredConfirmedBlockReward, error) {
+	if input == nil {
+		var obj StoredConfirmedBlockReward
+		return obj, fmt.Errorf("Cannot deserialize null array")
+	}
+	deserializer := bincode.NewDeserializer(input)
+	obj, err := DeserializeStoredConfirmedBlockReward(deserializer)
+	if err == nil && deserializer.GetBufferOffset() < uint64(len(input)) {
+		return obj, fmt.Errorf("Some input bytes were not read")
+	}
+	return obj, err
 }
 
 type TransactionError interface {
@@ -5272,6 +5456,86 @@ func deserialize_tuple4_tuple1_u8_u8_u8_u8(deserializer serde.Deserializer) (str
 	}
 	if val, err := deserializer.DeserializeU8(); err == nil {
 		obj.Field3 = val
+	} else {
+		return obj, err
+	}
+	return obj, nil
+}
+
+func serialize_tuple6_tuple1_u8_u8_u8_u8_u8_u8(value struct {
+	Field0 struct{ Field0 uint8 }
+	Field1 uint8
+	Field2 uint8
+	Field3 uint8
+	Field4 uint8
+	Field5 uint8
+}, serializer serde.Serializer,
+) error {
+	if err := serialize_tuple1_u8(value.Field0, serializer); err != nil {
+		return err
+	}
+	if err := serializer.SerializeU8(value.Field1); err != nil {
+		return err
+	}
+	if err := serializer.SerializeU8(value.Field2); err != nil {
+		return err
+	}
+	if err := serializer.SerializeU8(value.Field3); err != nil {
+		return err
+	}
+	if err := serializer.SerializeU8(value.Field4); err != nil {
+		return err
+	}
+	if err := serializer.SerializeU8(value.Field5); err != nil {
+		return err
+	}
+	return nil
+}
+
+func deserialize_tuple6_tuple1_u8_u8_u8_u8_u8_u8(deserializer serde.Deserializer) (struct {
+	Field0 struct{ Field0 uint8 }
+	Field1 uint8
+	Field2 uint8
+	Field3 uint8
+	Field4 uint8
+	Field5 uint8
+}, error,
+) {
+	var obj struct {
+		Field0 struct{ Field0 uint8 }
+		Field1 uint8
+		Field2 uint8
+		Field3 uint8
+		Field4 uint8
+		Field5 uint8
+	}
+	if val, err := deserialize_tuple1_u8(deserializer); err == nil {
+		obj.Field0 = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeU8(); err == nil {
+		obj.Field1 = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeU8(); err == nil {
+		obj.Field2 = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeU8(); err == nil {
+		obj.Field3 = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeU8(); err == nil {
+		obj.Field4 = val
+	} else {
+		return obj, err
+	}
+	if val, err := deserializer.DeserializeU8(); err == nil {
+		obj.Field5 = val
 	} else {
 		return obj, err
 	}

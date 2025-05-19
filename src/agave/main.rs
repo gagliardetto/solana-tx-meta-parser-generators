@@ -21,6 +21,49 @@ fn generate_bindings(commit: &str) {
     let mut samples = Samples::new();
     println!("samples created");
 
+    {
+        let mut stored_block_rewards = Vec::new();
+        for i in 0..10 {
+            stored_block_rewards.push(StoredConfirmedBlockReward {
+                pubkey: format!("pubkey_{}", i),
+                lamports: 100 + i64::from(i),
+            });
+        }
+        {
+            // convert stored_block_rewards to StoredConfirmedBlockRewards
+            let stored_block_rewards: StoredConfirmedBlockRewards =
+                stored_block_rewards_from_vec(stored_block_rewards);
+            // register sample
+            let reg = tracer
+                .trace_value::<StoredConfirmedBlockRewards>(&mut samples, &stored_block_rewards);
+            println!("registered StoredConfirmedBlockRewards");
+            if let Err(e) = reg {
+                panic!("error: {}", e);
+            }
+        }
+        // {
+        //     // register
+        //     let sample = stored_block_rewards.clone();
+        //     let reg = tracer.trace_value::<Vec<StoredConfirmedBlockReward>>(&mut samples, &sample);
+        //     println!("registered sample");
+        //     if let Err(e) = reg {
+        //         panic!("error: {}", e);
+        //     }
+        //     {
+        //         // also register individually
+        //         // iterate over stored_block_rewards
+        //         for reward in stored_block_rewards.iter() {
+        //             let sample = reward.clone();
+        //             let reg =
+        //                 tracer.trace_value::<StoredConfirmedBlockReward>(&mut samples, &sample);
+        //             println!("registered sample");
+        //             if let Err(e) = reg {
+        //                 panic!("error: {}", e);
+        //             }
+        //         }
+        //     }
+        // }
+    }
     // Sample cases with success:
     {
         let sample_meta = solana_transaction_status_client_types::TransactionStatusMeta {
@@ -406,4 +449,19 @@ impl Iterator for RewardTypeIter {
         self.index += 1;
         Some(item)
     }
+}
+
+type StoredConfirmedBlockRewards = Vec<StoredConfirmedBlockReward>;
+
+#[derive(Serialize, Deserialize, Clone)]
+struct StoredConfirmedBlockReward {
+    pubkey: String,
+    lamports: i64,
+}
+
+// StoredConfirmedBlockRewards from Vec<StoredConfirmedBlockReward>;
+fn stored_block_rewards_from_vec(
+    rewards: Vec<StoredConfirmedBlockReward>,
+) -> StoredConfirmedBlockRewards {
+    rewards
 }
